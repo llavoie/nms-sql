@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM motech_data_services.nms_ma_completion_records;
