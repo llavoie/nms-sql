@@ -25,4 +25,4 @@ WHERE
 GROUP BY 
 	bk.externalId
 ORDER BY 
-	stateName, districtName, circleName, startDate, completionDate
+	stateName, districtName, circleName, startDate, completionDate;
