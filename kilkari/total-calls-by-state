@@ -1,0 +1,12 @@
+SELECT st.state_name                               AS State, 
+       Count(*)                                    AS Total, 
+       SUM(IF (scm.call_status = 'SUCCESS', 1, 0)) AS Success 
+FROM   subscriber_call_measure AS scm 
+       join subscriptions AS s 
+         ON s.subscription_id = scm.subscription_id 
+       join subscribers AS ss 
+         ON ss.subscriber_id = s.subscriber_id 
+       join state_dimension AS st 
+         ON st.state_id = ss.state_id 
+WHERE  scm.start_date_id < 144 
+GROUP  BY st.state_name; 
