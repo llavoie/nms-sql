@@ -1,0 +1,22 @@
+select b.State_Name, b.district_name, b.MS_ISDN,count(*) from subscriber_call_measure scm
+left join subscriptions sub on sub.Subscription_ID=scm.Subscription_ID
+left join (select subs.MS_ISDN,subs.Activation_Date,subs.Last_Modified_Time,dt.FullDate as Last_Success,
+sd.State_Name as state_name,dd.district_name as district_name,max(dt.FullDate) as fulldate
+from subscriber_call_measure as scm 
+left join subscriptions as subs on scm.Subscription_ID=subs.Subscription_ID and subs.Subscription_Status='ACTIVE'
+left join subscribers as ss on ss.Subscriber_ID=subs.Subscriber_ID
+left join date_dimension as dt on scm.End_Date_ID=dt.ID 
+left join state_dimension as sd on sd.State_ID=ss.State_ID
+left join district_dimension as dd on dd.Id=ss.District_ID 
+where scm.Call_Status='SUCCESS' and scm.Call_Source='OBD'
+group by subs.MS_ISDN) b on b.MS_ISDN=sub.MS_ISDN
+left join date_dimension d on scm.End_Date_ID=d.ID
+where scm.Call_Status<>'SUCCESS' 
+and CASE WHEN b.fulldate=NULL
+	 THEN d.FullDate>date(b.Activation_Date)
+         ELSE d.FullDate>b.fulldate
+         END
+group by b.MS_ISDN
+order by b.State_Name, b.district_name
+
+--days since last successful call(reporting database)
